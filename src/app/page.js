@@ -1,6 +1,5 @@
 "use client";
 import { useState } from 'react';
-import "../style/style.css"
 import Globe from '../components/GlobeCalculs.jsx';
 import DestinationButtons from '../components/GlobeDestinationsButtons.jsx';
 
