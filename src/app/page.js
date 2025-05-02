@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import "../style/style.css"
 import Globe from '../components/GlobeCalculs.jsx';
-import DestinationButtons from '../components/GlobeDestinations.jsx';
+import DestinationButtons from '../components/GlobeDestinationsButtons.jsx';
 
 export default function App() {
   const [target, setTarget] = useState({ lat: 48.866667, lng: -2.333333 }); // Paris par défaut
