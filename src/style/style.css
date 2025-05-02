@@ -1,0 +1,26 @@
+/* Assure que le canvas prend toute la largeur et hauteur */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000; /* Fond noir */
+  }
+
+  .buttonBlockDestination {
+    z-index: 10;
+    display:flex;
+    gap: 2em;
+    width: 50%;
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+  
+  .destinationButtons {
+    background-color: white;
+    width: 100px;
+    padding: 10px 0 10px 0;
+    border-radius: 50px;
+    cursor: pointer;
+  }
