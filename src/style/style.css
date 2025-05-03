@@ -12,7 +12,6 @@ html, body {
     z-index: 10;
     display:flex;
     gap: 2em;
-    width: 50%;
     margin-top: 20px;
     margin-left: 20px;
   }
@@ -23,4 +22,20 @@ html, body {
     padding: 10px 0 10px 0;
     border-radius: 50px;
     cursor: pointer;
+  }
+
+  @media screen and (max-width: 1025px) {
+    .buttonBlockDestination {
+      margin: 20px 20px;
+      justify-content: space-around;
+    }
+  }
+
+  @media screen and (max-width: 425px) {
+    .destinationButtons {
+      width: 100%;
+    }
+    .buttonBlockDestination {
+      flex-direction: column;
+    }
   }

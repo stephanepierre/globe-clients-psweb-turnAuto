@@ -1,0 +1,35 @@
+{
+    "name": "Planète 3D",
+    "short_name": "Planète3D",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "description": "Visualisez les villes du monde en 3D interactive avec Planète 3D.",
+    "icons": [
+      {
+        "src": "./icons/globe3d_icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "./icons/globe3d_icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "screenshots": [
+      {
+        "src": "./screenshots/screenshot.png",
+        "sizes": "1024x512",
+        "type": "image/png",
+        "form_factor": "wide"
+      },
+      {
+        "src": "./screenshots/screenshot.png",
+        "sizes": "512x1024",
+        "type": "image/png"
+      }
+    ]
+  }
+  
