@@ -1,12 +1,12 @@
-"use client"
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { TextureLoader, Vector3 } from 'three';
-import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
+"use client";
+import { Canvas, useThree } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import { TextureLoader, Vector3 } from "three";
+import { useRef, useEffect, useState } from "react";
+import { gsap } from "gsap";
 
-const SCALE = 100;  //distance du globe
-const CAMERA_DISTANCE = 300;  //distance de la caméra
+const SCALE = 100;
+const CAMERA_DISTANCE = 300;
 
 /* Calcul des positions avec latitude, longitude et angle de vue */
 function latLngToXYZ(lat, lng, radius) {
@@ -23,6 +23,7 @@ function GlobeScene({ target }) {
   const { camera } = useThree();
   const globeRef = useRef();
   const markerRef = useRef();
+  const [cities, setCities] = useState([]);
 
   /* Récupération des infos pour la position de la caméra et du point rouge */
   useEffect(() => {
@@ -44,31 +45,52 @@ function GlobeScene({ target }) {
     });
   }, [target]);
 
-  /* Choix de la carte selon une URL et de sa texture */
+  // Chargement de la texture du globe
+
+    useEffect(() => {
+      const loader = new TextureLoader();
+      loader.load('/textures/texture_globe.jpg', (texture) => {
+        if (globeRef.current) {
+          globeRef.current.material.map = texture;
+          globeRef.current.material.needsUpdate = true;
+        }
+      });
+    }, []);
+
+  // Chargement des villes
   useEffect(() => {
-    const loader = new TextureLoader();
-    loader.load('https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg', (texture) => {
-      if (globeRef.current) {
-        globeRef.current.material.map = texture;
-        globeRef.current.material.needsUpdate = true;
-      }
-    });
+    fetch("/data/city_more_1M5.json")
+      .then((res) => res.json())
+      .then((data) => setCities(data));
   }, []);
 
   return (
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[1, 1, 1]} />
+
+      {/* 🌍 Globe */}
       <mesh ref={globeRef} rotation={[0, -Math.PI, 0]}>
         <sphereGeometry args={[SCALE, 64, 64]} />
         <meshStandardMaterial />
       </mesh>
 
-      {/* 🔴 Point rouge */}
+      {/* 🔴 Point animé (ville cible) */}
       <mesh ref={markerRef}>
         <sphereGeometry args={[1.5, 16, 16]} />
         <meshStandardMaterial color="red" />
       </mesh>
+
+      {/* 🟠 Capitales et 🔵 grandes villes */}
+      {cities.map((city, idx) => {
+        const pos = latLngToXYZ(city.lat, city.lng, SCALE + 1);
+        return (
+          <mesh key={idx} position={pos}>
+            <sphereGeometry args={[0.6, 8, 8]} />
+            <meshStandardMaterial color={city.capitale ? "orange" : "lightblue"} />
+          </mesh>
+        );
+      })}
 
       <OrbitControls enablePan={false} enableZoom={true} />
     </>
@@ -77,7 +99,10 @@ function GlobeScene({ target }) {
 
 export default function Globe({ target }) {
   return (
-    <Canvas camera={{ position: [0, 0, SCALE + CAMERA_DISTANCE], fov: 45 }} style={{ width: '100%', height: '100%' }}>
+    <Canvas
+      camera={{ position: [0, 0, SCALE + CAMERA_DISTANCE], fov: 45 }}
+      style={{ width: "100%", height: "100%" }}
+    >
       <GlobeScene target={target} />
     </Canvas>
   );

@@ -18,6 +18,14 @@ export default function App() {
   }, []);
   const [target, setTarget] = useState({ lat: 48.866667, lng: -2.333333 }); // Paris par défaut
 
+  return (
+    <>
+      <DestinationButtons setTarget={setTarget} />
+      <Globe target={target} />
+    </>
+  );
+}
+  /*
   const destinations = [
     { name: 'Rio', lat: -22.9068, lng: 43.1227 },
     { name: 'Paris', lat: 48.866667, lng: -2.333333 },
@@ -32,3 +40,4 @@ export default function App() {
     </>
   );
 }
+  */

@@ -21,12 +21,21 @@ Vous êtes libre d'utiliser cette démo à votre convenance.
 - aller sur : http://localhost:3000/
 
 ## Ajout de destination
-- Aller dans le fichier page.js src > app > page.js
-- Dans la constante destinations, rentrer entre crochet { name: le nom de la destination, lat: la latitude, lng: la longitude ]
+- Les destination sont récupérées depuis un fichier JSON en interne au projet pour plus de rapidité et pouvoir facilement modifier des lat ou long incorrecte
+- Aller dans le fichier public/data/city_more_1M5.json
+- Toutes les informations doivent être entrées comme les autres y compris capitale: true ou false
 - ⚠ Attention, si la longitude est à l'EST du méridien de greenwich, mettre un - devant. Si la latitude est au sud de l'équateur mettre un - devant
+- le fichier est récupé et utilisé dans GlobeCalculs.jsx dans les components
+
+## Texture de la carte (le visuel de la carte)
+- l'image de la carte se trouve dans public/textures c'est le fichier texture_globe.jpg
+- Si vous voulez en ajouter une autre il faut aussi changer dans GlobeCalculs.jsx le nom de la nouvelle carte.
 
 ## Calculs
 Les calculs se font dans le fichier src > components > GlobeCalculs.jsx
 
-## Gestion boutons destinations
-La gestion des boutons des destinations se fait dans src > components > GlobeDestinationsButtons.jsx
+## Gestion bouton destinations
+La gestion du bouton des destinations se fait dans src > components > GlobeDestinationsButtons.jsx
+
+## Style
+Le fichier css gérant le style de l'app se trouve dans src/style/style.css
