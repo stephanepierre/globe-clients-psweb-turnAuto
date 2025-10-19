@@ -1,14 +1,19 @@
 "use client";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { TextureLoader, Vector3 } from "three";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 
 const SCALE = 100;
-const CAMERA_DISTANCE = 300;
+// Distance caméra adaptée à la taille de l’écran
+const CAMERA_DISTANCE =
+  typeof window !== "undefined"
+    ? window.innerWidth < 768
+      ? 400 // mobile : plus de recul
+      : 300 // desktop : distance normale
+    : 300;
 
-/* Calcul des positions avec latitude, longitude et angle de vue */
 function latLngToXYZ(lat, lng, radius) {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
@@ -23,50 +28,48 @@ function GlobeScene({ target }) {
   const { camera } = useThree();
   const globeRef = useRef();
   const markerRef = useRef();
-  const [cities, setCities] = useState([]);
+  const haloRef = useRef();
 
-  /* Récupération des infos pour la position de la caméra et du point rouge */
+  // 📸 Déplacement fluide de la caméra selon la cible
   useEffect(() => {
     const point = latLngToXYZ(target.lat, target.lng, SCALE + 1);
     const cam = latLngToXYZ(target.lat, target.lng, SCALE + CAMERA_DISTANCE);
 
-    if (markerRef.current) {
-      markerRef.current.position.copy(point);
-    }
+    if (markerRef.current) markerRef.current.position.copy(point);
+    if (haloRef.current) haloRef.current.position.copy(point);
 
     gsap.to(camera.position, {
       x: cam.x,
       y: cam.y,
       z: cam.z,
-      duration: 2,
-      onUpdate: () => {
-        camera.lookAt(point);
-      },
+      duration: 3,
+      ease: "power2.inOut",
+      onUpdate: () => camera.lookAt(point),
     });
   }, [target]);
 
-  // Chargement de la texture du globe
-
-    useEffect(() => {
-      const loader = new TextureLoader();
-      loader.load('/textures/texture_globe.jpg', (texture) => {
-        if (globeRef.current) {
-          globeRef.current.material.map = texture;
-          globeRef.current.material.needsUpdate = true;
-        }
-      });
-    }, []);
-
-  // Chargement des villes
+  // 🌍 Chargement de la texture du globe
   useEffect(() => {
-    fetch("/data/city_more_1M5.json")
-      .then((res) => res.json())
-      .then((data) => setCities(data));
+    const loader = new TextureLoader();
+    loader.load("/textures/texture_globe.jpg", (texture) => {
+      if (globeRef.current) {
+        globeRef.current.material.map = texture;
+        globeRef.current.material.needsUpdate = true;
+      }
+    });
   }, []);
+
+  // ✨ Animation pulsante du halo
+  useFrame(() => {
+    if (haloRef.current) {
+      const scale = 1 + Math.sin(Date.now() * 0.003) * 0.3; // pulsation douce
+      haloRef.current.scale.set(scale, scale, scale);
+    }
+  });
 
   return (
     <>
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.6} />
       <directionalLight position={[1, 1, 1]} />
 
       {/* 🌍 Globe */}
@@ -75,24 +78,19 @@ function GlobeScene({ target }) {
         <meshStandardMaterial />
       </mesh>
 
-      {/* 🔴 Point animé (ville cible) */}
+      {/* ✨ Point doré pulsant */}
       <mesh ref={markerRef}>
-        <sphereGeometry args={[1.5, 16, 16]} />
-        <meshStandardMaterial color="red" />
+        <sphereGeometry args={[2, 16, 16]} />
+        <meshStandardMaterial emissive="#ffcc66" emissiveIntensity={2} color="#ffffff" />
       </mesh>
 
-      {/* 🟠 Capitales et 🔵 grandes villes */}
-      {cities.map((city, idx) => {
-        const pos = latLngToXYZ(city.lat, city.lng, SCALE + 1);
-        return (
-          <mesh key={idx} position={pos}>
-            <sphereGeometry args={[0.6, 8, 8]} />
-            <meshStandardMaterial color={city.capitale ? "orange" : "lightblue"} />
-          </mesh>
-        );
-      })}
+      {/* 🌟 Halo lumineux */}
+      <mesh ref={haloRef}>
+        <sphereGeometry args={[5, 32, 32]} />
+        <meshBasicMaterial color="#ffcc66" transparent opacity={0.25} />
+      </mesh>
 
-      <OrbitControls enablePan={false} enableZoom={true} />
+      <OrbitControls enablePan={false} enableZoom={false} />
     </>
   );
 }
@@ -101,7 +99,7 @@ export default function Globe({ target }) {
   return (
     <Canvas
       camera={{ position: [0, 0, SCALE + CAMERA_DISTANCE], fov: 45 }}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100vw", height: "100vh", background: "black" }}
     >
       <GlobeScene target={target} />
     </Canvas>
